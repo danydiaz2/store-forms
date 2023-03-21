@@ -28,15 +28,15 @@ export class BasicFormComponent implements OnInit {
   private buildForm(){
 
     this.form = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.maxLength(10)]],
-      email: [''],
+      name: ['', [Validators.required, Validators.maxLength(10), Validators.pattern(/^[a-zA-Z]+$/)]],
+      email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
       color: ['#000000'],
       date:[''],
-      age: [12],
-      category: [''],
+      age: [18, [Validators.required, Validators.min(18), Validators.max(100)]],
+      category: [''], 
       tag: [''],
-      agree: [false],
+      agree: [false, [Validators.requiredTrue]],
       gender: [''],
       zone: [''],
     });
