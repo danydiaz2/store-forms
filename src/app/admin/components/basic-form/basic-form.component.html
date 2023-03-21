@@ -1,31 +1,40 @@
 <form [formGroup]="form" (ngSubmit)="save($event)">
-  <p>
-    Name: {{ nameField.value }} {{ nameField.valid }}
-    <input
-      [class.is-valid]="isNameFieldValid"
-      [class.is-invalid]="isNameFieldInvalid"
-      type="text"
-      formControlName="name"
-    />
-    <button [disabled]="nameField.invalid" (click)="getNameValue()">
-      Get value
-    </button>
-  </p>
-  <div class="messages" [class.active]="isNameFieldInvalid">
+  <div formGroupName="fullName">
     <p>
-      <strong *ngIf="nameField.hasError('required')"
-        >Este campo es requerido</strong
-      >
+      Name: {{ nameField.value }} {{ nameField.valid }}
+      <input
+        [class.is-valid]="isNameFieldValid"
+        [class.is-invalid]="isNameFieldInvalid"
+        type="text"
+        formControlName="name"
+      />
+      <button [disabled]="nameField.invalid" (click)="getNameValue()">
+        Get value
+      </button>
     </p>
+    <div class="messages" [class.active]="isNameFieldInvalid">
+      <p>
+        <strong *ngIf="nameField.hasError('required')"
+          >Este campo es requerido</strong
+        >
+      </p>
+      <p>
+        <strong *ngIf="nameField.hasError('maxlength')"
+          >Bebe tener máximo 10 caracteres</strong
+        >
+      </p>
+      <p>
+        <strong *ngIf="nameField.hasError('pattern')"
+          >No debe tener caracteres</strong
+        >
+      </p>
+    </div>
     <p>
-      <strong *ngIf="nameField.hasError('maxlength')"
-        >Bebe tener máximo 10 caracteres</strong
-      >
-    </p>
-    <p>
-      <strong *ngIf="nameField.hasError('pattern')"
-        >No debe tener caracteres</strong
-      >
+      Last Name: {{ lastField.value }} {{ lastField.valid }}
+      <input
+        type="text"
+        formControlName="last"
+      />
     </p>
   </div>
   <p>
@@ -33,7 +42,10 @@
     <input type="email" formControlName="email" />
   </p>
 
-  <div class="messages" [class.active]="emailField.touched && emailField.invalid">
+  <div
+    class="messages"
+    [class.active]="emailField.touched && emailField.invalid"
+  >
     <p>
       <strong *ngIf="emailField.hasError('required')"
         >Este campo es requerido</strong
@@ -51,7 +63,10 @@
     <input type="tel" formControlName="phone" />
   </p>
 
-  <div class="messages" [class.active]="phoneField.touched && phoneField.invalid">
+  <div
+    class="messages"
+    [class.active]="phoneField.touched && phoneField.invalid"
+  >
     <p>
       <strong *ngIf="phoneField.touched && phoneField.hasError('required')"
         >Este campo es requerido</strong
@@ -79,9 +94,7 @@
       >
     </p>
     <p>
-      <strong *ngIf="ageField.hasError('min')"
-        >Debe ser mayor de edad</strong
-      >
+      <strong *ngIf="ageField.hasError('min')">Debe ser mayor de edad</strong>
     </p>
     <p>
       <strong *ngIf="ageField.hasError('max')"
