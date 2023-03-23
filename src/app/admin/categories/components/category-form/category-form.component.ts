@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
+import { Category } from 'src/app/core/models/category.model';
 import { MyValidators } from 'src/app/utils/validators';
 import {CategoriesService} from './../../../../core/services/categories.service';
 
@@ -14,29 +15,32 @@ import {CategoriesService} from './../../../../core/services/categories.service'
 export class CategoryFormComponent implements OnInit {
 
   form: FormGroup;
-  categoryId: string;
+  isNew = true;
 
-  constructor(private formBuilder: FormBuilder, 
-              private categoriesService: CategoriesService,
-              private router: Router,
+  @Input() 
+  set category(data: Category){
+    if(data) {
+      this.isNew = false;
+      this.form.patchValue(data);
+    }
+  }
+  @Output() create = new EventEmitter(); 
+  @Output() update = new EventEmitter(); 
+
+  constructor(private formBuilder: FormBuilder,
               private storage: AngularFireStorage,
-              private route: ActivatedRoute) { 
+              private categoriesService: CategoriesService) { 
     this.buildForm();
 
    }
 
   ngOnInit(): void {
-    this.route.params.subscribe((params: Params) => {
-      this.categoryId = params.id;
-      if (this.categoryId) {
-        this.getCategory();
-      }
-    })
+    this.form.patchValue(this.category);
   }
 
   private buildForm() {
     this.form = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.minLength(4 )],MyValidators.validateCategory(this.categoriesService)],
+      name: ['', [Validators.required, Validators.minLength(4)],MyValidators.validateCategory(this.categoriesService)],
       image: ['', Validators.required]
     });
   }
@@ -51,37 +55,14 @@ export class CategoryFormComponent implements OnInit {
 
   save(){
     if (this.form.valid) {
-      if(this.categoryId){
-        this.updateCategory();
+      if(this.isNew){
+       this.create.emit(this.form.value);
       } else {
-        this.createCategory();
+       this.update.emit(this.form.value);
       }
     } else {
       this.form.markAllAsTouched();
     }
-  }
-
-  private createCategory(){
-    const data = this.form.value;
-    this.categoriesService.createCategory(data)
-    .subscribe(rta => {
-      this.router.navigate(['/admin/categories']);
-    })
-  }
-
-  private updateCategory(){
-    const data = this.form.value;
-    this.categoriesService.updateCategory(this.categoryId, data)
-    .subscribe(rta => {
-      this.router.navigate(['/admin/categories']);
-    })
-  }
-
-  private getCategory(){
-    this.categoriesService.getCategory(this.categoryId)
-    .subscribe(data => {
-      this.form.patchValue(data);
-    })
   }
 
   uploadFile(event) {
